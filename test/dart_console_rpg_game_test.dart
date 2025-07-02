@@ -19,7 +19,7 @@ void main() {
     var player = Player(name: 'Hero', maxHealth: 100, attackPower: 20, defensePower: 10);
     var monster = Monster(name: 'Goblin', maxHealth: 50, attackPower: 15);
     
-    player.attackMonster(monster);
+    player.attack(monster);
     monster.attack(player);
     
     expect(monster.health, lessThan(50));
