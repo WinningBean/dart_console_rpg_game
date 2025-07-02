@@ -30,11 +30,8 @@ abstract class Character {
 
   // 방어 메서드
   void defend() {
-    int defenseBoost = (defensePower * 0.1).toInt(); // 방어력의 10%만큼 체력 증가'
-    if (defenseBoost + health > maxHealth) {
-      defenseBoost = maxHealth - health; // 최대 체력을 초과하지 않도록 조정
-    }
-    health += defenseBoost;
+    int defenseBoost = max(1, defensePower * 0.1).toInt(); // 방어력의 10%를 체력으로 회복, 최소 1의 회복량 보장
+    health = min(health + defenseBoost, maxHealth); // 체력 회복, 체력이 최대 체력을 초과하지 않도록 조정
     print('$name이(가) 방어를 시도하여 체력이 $defenseBoost만큼 증가했습니다. 현재 체력: $health');
   }
 }

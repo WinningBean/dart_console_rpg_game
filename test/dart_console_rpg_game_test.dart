@@ -16,7 +16,7 @@ void main() {
 
   // 상태 업데이트 테스트
   test('Character attack test', () {
-    var player = Player(name: 'Hero', maxHealth: 100, attackPower: 20, defensePower: 10);
+    var player = Player(name: 'Hero', maxHealth: 100, attackPower: 20, defensePower: 9);
     var monster = Monster(name: 'Goblin', maxHealth: 50, attackPower: 15);
     
     player.attack(monster);
@@ -27,6 +27,12 @@ void main() {
 
     var prevHealth = player.health;
     player.defend();
-    expect(player.health, greaterThan(prevHealth));
+    expect(player.health, greaterThan(prevHealth)); // 방어 후 체력은 이전보다 증가해야 함
+    
+    int lostHealth = player.maxHealth - player.health;
+    for (int i = 0; i < lostHealth + 1; i++) {
+      player.defend();
+    }
+    expect(player.health, lessThanOrEqualTo(player.maxHealth)); // 방어 후 체력은 최대 체력을 초과하지 않아야 함
   });
 }
