@@ -1,0 +1,166 @@
+import 'dart:io';
+import 'dart:math';
+
+import 'package:dart_console_rpg_game/battle_action.dart';
+import 'package:dart_console_rpg_game/character.dart';
+import 'package:dart_console_rpg_game/monster.dart';
+import 'package:dart_console_rpg_game/player.dart';
+
+/// 게임의 주요 로직을 구현하는 클래스
+class Game {
+  static final playerNameRegExp = RegExp(r'^[a-zA-Z가-힣\s]{1,10}$');
+
+  late final Player player;
+  List<Monster> monsters;
+  Monster? nowMonster;
+  int deadMonstersCount = 0;
+
+  /// 생성자
+  Game(this.monsters);
+
+  /// 게임 시작 메서드
+  void start() {
+    player = createValidPlayer();
+    stdout.writeln("게임을 시작합니다!");
+    player.showStatus();
+    stdout.writeln();
+
+    while (player.health > 0) {
+      battle();
+    }
+
+    stdout.writeln('사용자의 체력이 소진되었습니다.');
+    // TODO: 결과 저장
+    end();
+  }
+
+  /// 새로운 사용자 생성 메서드
+  Player createValidPlayer() {
+    String input;
+    do {
+      stdout.write('사용자 이름 입력(한글 또는 영문)): ');
+      input = stdin.readLineSync() ?? '';
+    } while (!isInvalidPlayerName(input));
+
+    return Player(
+      name: input,
+      maxHealth: 100,
+      attackPower: 100,
+      defensePower: 100,
+    ); // 임시 숫자
+    // TODO: 파일 입력으로 숫자 처리
+  }
+
+  /// 사용자 이름 체크 메서드
+  bool isInvalidPlayerName(String input) {
+    final isValid = playerNameRegExp.hasMatch(input);
+    if (!isValid) {
+      stdout.writeln('올바른 이름을 입력해주세요. (한글 또는 영문만 입력 가능)\n');
+    }
+    return isValid;
+  }
+
+  /// 전투 진행 메서드
+  void battle() {
+    if (nowMonster == null) {
+      nowMonster = getRandomMonster();
+      stdout.writeln('새로운 몬스터가 나타났습니다!');
+      nowMonster!.showStatus();
+    }
+    actionPlayerBattle();
+    try {
+    actionMonsterBattle();
+    } on StateError catch (e) {
+      stdout.writeln(e.message);
+      end();
+    }
+  }
+
+  /// 사용자 전투 행동 메서드
+  void actionPlayerBattle() {
+    printBattleTurn(player);
+
+    BattleAction? battleAction;
+    while (battleAction == null) {
+      battleAction = selectedAction();
+      if (battleAction == null) {
+        stdout.write('올바른 전투 행동 번호를 입력해주세요. ');
+      }
+    }
+    actionBattle(battleAction, player, nowMonster!);
+  }
+
+  /// 몬스터 전투 행동 메서드
+  void actionMonsterBattle() {
+    nowMonster ?? (throw StateError('현재 전투 중인 몬스터가 설정되지 않았습니다.'));
+    printBattleTurn(nowMonster!);
+    actionBattle(BattleAction.attack, nowMonster!, player);
+  }
+
+  /// 전투별 행동 메서드
+  void actionBattle(
+    BattleAction battleAction,
+    Character owner,
+    Character opponent,
+  ) {
+    switch (battleAction) {
+      case BattleAction.attack:
+        owner.attack(opponent);
+        processAfterAttack(owner, opponent);
+        break;
+      case BattleAction.defend:
+        owner.defend();
+        break;
+    }
+  }
+
+  /// 공격 후 처리 메서드
+  void processAfterAttack(Character owner, Character opponent) {
+    if (opponent.health > 0) {
+      owner.showStatus();
+      opponent.showStatus();
+      return;
+    }
+
+    if (owner.runtimeType == Player) {
+      stdout.writeln('${opponent.name}을(를) 물리쳤습니다!\n');
+      deadMonstersCount++;
+      monsters.remove(opponent);
+      nowMonster = null;
+      // TODO: 다음 몬스터 설정
+    }
+  }
+
+  /// 랜덤으로 몬스터를 불러오는 메서드
+  Monster getRandomMonster() {
+    int randomIdx = Random().nextInt(monsters.length - 1);
+    return monsters[randomIdx];
+  }
+
+  /// 전투 진행 턴 출력 메서드
+  void printBattleTurn(Character character) {
+    stdout.writeln('\n${character.name}의 턴');
+  }
+
+  /// 사용자로부터 행동 선택을 받는 getter
+  BattleAction? selectedAction() {
+    stdout.write('행동 선택 ${BattleAction.sortedActionGuide}: ');
+
+    BattleAction? action;
+    try {
+      action = BattleAction.fromActionNum(
+        int.tryParse(stdin.readLineSync() ?? '') ?? 0,
+      );
+    } on ArgumentError catch (e) {
+      stdout.writeln(e.message);
+    }
+
+    return action;
+  }
+
+  /// 게임 종료 메서드
+  void end() {
+    stdout.writeln("게임이 종료되었습니다. 총 $deadMonstersCount마리의 몬스터를 처치했습니다.");
+    exit(0);
+  }
+}
