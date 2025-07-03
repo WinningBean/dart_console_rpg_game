@@ -8,19 +8,16 @@ import 'package:dart_console_rpg_game/player.dart';
 
 /// 게임의 주요 로직을 구현하는 클래스
 class Game {
-  static final playerNameRegExp = RegExp(r'^[a-zA-Z가-힣\s]{1,10}$');
-
-  late final Player player;
-  List<Monster> monsters;
+  final Player player;
+  final List<Monster> monsters;
   Monster? nowMonster;
   int deadMonstersCount = 0;
 
   /// 생성자
-  Game(this.monsters);
+  Game({required this.player, required this.monsters});
 
   /// 게임 시작 메서드
   void start() {
-    player = createValidPlayer();
     stdout.writeln("게임을 시작합니다!");
     player.showStatus();
     stdout.writeln();
@@ -32,32 +29,6 @@ class Game {
     stdout.writeln('사용자의 체력이 소진되었습니다.');
     // TODO: 결과 저장
     end();
-  }
-
-  /// 새로운 사용자 생성 메서드
-  Player createValidPlayer() {
-    String input;
-    do {
-      stdout.write('사용자 이름 입력(한글 또는 영문)): ');
-      input = stdin.readLineSync() ?? '';
-    } while (!isInvalidPlayerName(input));
-
-    return Player(
-      name: input,
-      maxHealth: 100,
-      attackPower: 100,
-      defensePower: 100,
-    ); // 임시 숫자
-    // TODO: 파일 입력으로 숫자 처리
-  }
-
-  /// 사용자 이름 체크 메서드
-  bool isInvalidPlayerName(String input) {
-    final isValid = playerNameRegExp.hasMatch(input);
-    if (!isValid) {
-      stdout.writeln('올바른 이름을 입력해주세요. (한글 또는 영문만 입력 가능)\n');
-    }
-    return isValid;
   }
 
   /// 전투 진행 메서드
