@@ -26,9 +26,21 @@ class Game {
       battle();
     }
 
-    stdout.writeln('사용자의 체력이 소진되었습니다.');
-    // TODO: 결과 저장
     end();
+    saveGameResult();
+    exit(0);
+  }
+
+  /// 결과 파일 저장 메서드
+  void saveGameResult() {
+    stdout.write('결과를 저장하시겠습니까? (y 입력 시 저장): ');
+    String input = stdin.readLineSync() ?? '';
+    if (input.toLowerCase() != 'y') return;
+
+    File reusltFile = File('files/result.txt');
+    String resultContent =
+        '사용자 이름: ${player.name}, 남은 체력: ${player.health}, 게임 결과: ${monsters.isEmpty ? '승리' : '패배'}';
+    reusltFile.writeAsStringSync(resultContent);
   }
 
   /// 전투 진행 메서드
@@ -112,7 +124,7 @@ class Game {
 
   /// 다음 몬스터 설정 메서드
   Monster? selectNextBattleMonster() {
-    stdout.write("다음 몬스터와 대결 ('y'입력 시 대결): ");
+    stdout.write("다음 몬스터와 대결 (y 입력 시 대결): ");
     String input = stdin.readLineSync() ?? '';
     if (input.toLowerCase() == 'y') {
       return selectRandomMonster();
@@ -153,7 +165,10 @@ class Game {
 
   /// 게임 종료 메서드
   void end() {
+    if (player.health <= 0) {
+      stdout.writeln('사용자의 체력이 소진되었습니다.');
+    } 
+
     stdout.writeln("게임이 종료되었습니다. 총 $deadMonstersCount마리의 몬스터를 처치했습니다.");
-    exit(0);
   }
 }
