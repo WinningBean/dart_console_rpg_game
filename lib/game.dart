@@ -33,14 +33,10 @@ class Game {
 
   /// 전투 진행 메서드
   void battle() {
-    if (nowMonster == null) {
-      nowMonster = getRandomMonster();
-      stdout.writeln('새로운 몬스터가 나타났습니다!');
-      nowMonster!.showStatus();
-    }
+    nowMonster ??= selectRandomMonster();
     actionPlayerBattle();
     try {
-    actionMonsterBattle();
+      actionMonsterBattle();
     } on StateError catch (e) {
       stdout.writeln(e.message);
       end();
@@ -97,14 +93,16 @@ class Game {
       stdout.writeln('${opponent.name}을(를) 물리쳤습니다!\n');
       deadMonstersCount++;
       monsters.remove(opponent);
-      nowMonster = null;
-      // TODO: 다음 몬스터 설정
+      nowMonster = selectRandomMonster();
     }
   }
 
   /// 랜덤으로 몬스터를 불러오는 메서드
-  Monster getRandomMonster() {
-    int randomIdx = Random().nextInt(monsters.length - 1);
+  Monster? selectRandomMonster() {
+    if (monsters.isEmpty) return null;
+    int randomIdx = monsters.length == 1 ? 0 : Random().nextInt(monsters.length - 1);
+    stdout.writeln('새로운 몬스터가 나타났습니다!');
+    monsters[randomIdx].showStatus();
     return monsters[randomIdx];
   }
 

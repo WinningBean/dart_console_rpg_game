@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:math';
 
 import 'package:dart_console_rpg_game/monster.dart';
 import 'package:dart_console_rpg_game/player.dart';
@@ -48,8 +49,9 @@ class GameLoader {
   }
 
   /// 몬스터 리스트 로드 메서드
-  /// files/monsters.txt로 부터 이름, 체력, 공격력 불러옴
-  static List<Monster> loadMonsters() {
+  /// files/monsters.txt로 부터 이름, 체력, 최대 공격력 불러옴
+  /// 몬스터의 공격력은 minAttack과 최대 공격력 사이 랜덤으로 설정
+  static List<Monster> loadMonsters(int minAttack) {
     try {
       final file = File('files/monsters.txt');
       final contents = file.readAsStringSync();
@@ -63,10 +65,13 @@ class GameLoader {
         String name = monsterInfos[0];
         int health = int.parse(monsterInfos[1]);
         int attack = int.parse(monsterInfos[2]);
+        int randomAttack = max(minAttack, Random().nextInt(attack));
+
         monsters.add(
-          Monster(name: name, maxHealth: health, attackPower: attack),
+          Monster(name: name, maxHealth: health, attackPower: randomAttack),
         );
       }
+
       return monsters;
     } catch (e) {
       print('몬스터 데이터를 불러오는 데 실패했습니다: $e');
