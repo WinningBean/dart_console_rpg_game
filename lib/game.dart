@@ -35,12 +35,15 @@ class Game {
   void battle() {
     nowMonster ??= selectRandomMonster();
     actionPlayerBattle();
+
     try {
-      actionMonsterBattle();
+      checkSettingNowMonster();
     } on StateError catch (e) {
       stdout.writeln(e.message);
       end();
     }
+
+    actionMonsterBattle();
   }
 
   /// 사용자 전투 행동 메서드
@@ -59,9 +62,19 @@ class Game {
 
   /// 몬스터 전투 행동 메서드
   void actionMonsterBattle() {
-    nowMonster ?? (throw StateError('현재 전투 중인 몬스터가 설정되지 않았습니다.'));
     printBattleTurn(nowMonster!);
     actionBattle(BattleAction.attack, nowMonster!, player);
+  }
+
+  /// 몬스터 설정 체크 메서드
+  void checkSettingNowMonster() {
+    if (nowMonster != null) return;
+
+    if (monsters.isEmpty) {
+      stdout.writeln('축하합니다! 모든 몬스터를 물리쳤습니다.');
+    } else {
+      throw StateError('현재 전투 중인 몬스터가 설정되지 않았습니다.');
+    }
   }
 
   /// 전투별 행동 메서드
@@ -93,14 +106,25 @@ class Game {
       stdout.writeln('${opponent.name}을(를) 물리쳤습니다!\n');
       deadMonstersCount++;
       monsters.remove(opponent);
-      nowMonster = selectRandomMonster();
+      nowMonster = selectNextBattleMonster();
     }
+  }
+
+  /// 다음 몬스터 설정 메서드
+  Monster? selectNextBattleMonster() {
+    stdout.write("다음 몬스터와 대결 ('y'입력 시 대결): ");
+    String input = stdin.readLineSync() ?? '';
+    if (input.toLowerCase() == 'y') {
+      return selectRandomMonster();
+    }
+
+    return null;
   }
 
   /// 랜덤으로 몬스터를 불러오는 메서드
   Monster? selectRandomMonster() {
     if (monsters.isEmpty) return null;
-    int randomIdx = monsters.length == 1 ? 0 : Random().nextInt(monsters.length - 1);
+    int randomIdx = Random().nextInt(monsters.length);
     stdout.writeln('새로운 몬스터가 나타났습니다!');
     monsters[randomIdx].showStatus();
     return monsters[randomIdx];

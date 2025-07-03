@@ -7,7 +7,7 @@ import 'package:dart_console_rpg_game/player.dart';
 class GameLoader {
   static final playerNameRegExp = RegExp(r'^[a-zA-Z가-힣\s]{1,10}$');
 
-  /// 사용자 생성 메세드
+  /// 사용자 생성 메서드
   /// 이름은 입력받아서 설정
   /// files/player.txt로 부터 체력, 공격력, 방어력 불러옴
   static Player loadValidPlayer() {
@@ -35,7 +35,7 @@ class GameLoader {
     }
   }
 
-  /// 사용자 이름 생성 메세드
+  /// 사용자 이름 생성 메서드
   static String getCreatePlayerName() {
     String input;
     while (true) {
