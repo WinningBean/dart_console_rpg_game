@@ -13,6 +13,7 @@ class Game {
   Monster? nowMonster;
 
   int deadMonstersCount = 0;
+  int monsterTurnCount = 0;
   bool isUsedItem = false;
   bool isItemAttack = false;
   bool isPlayingGame = true;
@@ -78,6 +79,11 @@ class Game {
   void actionMonsterBattle() {
     printBattleTurn(nowMonster!);
     actionBattle(BattleAction.attack, nowMonster!, player);
+
+    if (++monsterTurnCount == 3) {
+      nowMonster!.updateDefense(2);
+      monsterTurnCount = 0;
+    }
   }
 
   /// 전투별 행동 메서드
@@ -163,6 +169,7 @@ class Game {
     int randomIdx = Random().nextInt(monsters.length);
     stdout.writeln('새로운 몬스터가 나타났습니다!');
     monsters[randomIdx].showStatus();
+    monsterTurnCount = 0;
     return monsters[randomIdx];
   }
 

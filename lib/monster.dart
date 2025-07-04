@@ -11,10 +11,4 @@ class Monster extends Character {
     required super.maxHealth,
     required super.attackPower,
   }) : super(defensePower: 0); // 몬스터는 기본적으로 방어력 0으로 설정
-
-  /// 몬스터의 상태를 출력하는 메소드
-  @override
-  void showStatus() {
-    stdout.writeln('$name - 체력: $health, 공격력: $attackPower');
-  }
 }

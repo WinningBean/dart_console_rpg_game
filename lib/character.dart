@@ -41,4 +41,9 @@ abstract class Character {
     health = min(health + defenseBoost, maxHealth); // 체력 회복, 체력이 최대 체력을 초과하지 않도록 조정
     stdout.writeln('$name이(가) 방어 태세를 취하여 체력이 $defenseBoost만큼 증가했습니다. 현재 체력: $health');
   }
+
+  void updateDefense(int updateNum) {
+    defensePower += updateNum;
+    stdout.writeln('$name의 방어력이 증가했습니다! 현재 방어력: $defensePower');
+  }
 }
