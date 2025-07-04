@@ -21,6 +21,7 @@ class Game {
   void start() {
     stdout.writeln("게임을 시작합니다!");
     player.showStatus();
+    bonusPlayerHealth();
     stdout.writeln();
 
     while ((isPlayingGame && monsters.isNotEmpty) && player.health > 0) {
@@ -28,6 +29,14 @@ class Game {
     }
 
     end();
+  }
+
+  /// 보너스 체력 제공 메서드
+  void bonusPlayerHealth() {
+    if (Random().nextInt(100) <= 30) {
+      player.restoreHealth(10);
+      stdout.writeln('보너스 체력을 얻었습니다! 현재 체력: ${player.health}');
+    }
   }
 
   /// 전투 진행 메서드

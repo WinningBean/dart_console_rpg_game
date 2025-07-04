@@ -4,7 +4,7 @@ import 'dart:math';
 /// 게임 내 모든 캐릭터의 기본 특성을 정의하는 추상 클래스
 abstract class Character {
   final String name; // 이름
-  final int maxHealth; // 최대 체력
+  int maxHealth; // 최대 체력
   int health; // 체력
   int attackPower; // 공격력
   int defensePower; // 방어력

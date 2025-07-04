@@ -9,4 +9,9 @@ class Player extends Character {
     required super.attackPower,
     required super.defensePower,
   });
+
+  void restoreHealth(int recoveryNum) {
+    maxHealth += recoveryNum;
+    health += recoveryNum;
+  }
 }
