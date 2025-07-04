@@ -4,18 +4,18 @@ import 'dart:math';
 import 'package:dart_console_rpg_game/monster.dart';
 import 'package:dart_console_rpg_game/player.dart';
 
-/// 
+/// 게임 데이터를 불러오는 클래스
 class GameLoader {
   static final playerNameRegExp = RegExp(r'^[a-zA-Z가-힣\s]{1,10}$');
 
   /// 사용자 생성 메서드
   /// 이름은 입력받아서 설정
   /// files/player.txt로 부터 체력, 공격력, 방어력 불러옴
-  static Player loadValidPlayer() {
+  static Player loadValidPlayer(String loadFilePath) {
     try {
       String name = getCreatePlayerName();
 
-      final file = File('files/player.txt');
+      final file = File(loadFilePath);
       final contents = file.readAsStringSync();
       final stats = contents.split(',');
       if (stats.length != 3) throw FormatException('Invalid player data');
@@ -52,9 +52,9 @@ class GameLoader {
   /// 몬스터 리스트 로드 메서드
   /// files/monsters.txt로 부터 이름, 체력, 최대 공격력 불러옴
   /// 몬스터의 공격력은 minAttack과 최대 공격력 사이 랜덤으로 설정
-  static List<Monster> loadMonsters(int minAttack) {
+  static List<Monster> loadMonsters(String loadFilePath, int minAttack) {
     try {
-      final file = File('files/monsters.txt');
+      final file = File(loadFilePath);
       final contents = file.readAsStringSync();
       final monsterContents = contents.split('\n');
       final stats = monsterContents[0].split(',');
