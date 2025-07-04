@@ -12,6 +12,7 @@ class Game {
   final List<Monster> monsters;
   Monster? nowMonster;
   int deadMonstersCount = 0;
+  bool isPlayingGame = true;
 
   /// 생성자
   Game({required this.player, required this.monsters});
@@ -22,7 +23,7 @@ class Game {
     player.showStatus();
     stdout.writeln();
 
-    while (player.health > 0) {
+    while ((isPlayingGame && monsters.isNotEmpty) && player.health > 0) {
       battle();
     }
 
@@ -35,12 +36,25 @@ class Game {
   void saveGameResult() {
     stdout.write('결과를 저장하시겠습니까? (y 입력 시 저장): ');
     String input = stdin.readLineSync() ?? '';
-    if (input.toLowerCase() != 'y') return;
+    if (input.toLowerCase() == 'y') {
+      final String saveFileName = 'files/result.txt';
 
-    File reusltFile = File('files/result.txt');
-    String resultContent =
-        '사용자 이름: ${player.name}, 남은 체력: ${player.health}, 게임 결과: ${monsters.isEmpty ? '승리' : '패배'}';
-    reusltFile.writeAsStringSync(resultContent);
+      File reusltFile = File(saveFileName);
+      String resultContent =
+          '사용자 이름: ${player.name}, 남은 체력: ${player.health}, 게임 결과: ${isWonGame() ? '승리' : '패배'}';
+      reusltFile.writeAsStringSync(resultContent);
+
+      stdout.writeln('결과가 $saveFileName 으로 저장되었습니다.');
+    }
+    stdout.writeln('프로그램을 종료합니다.');
+  }
+
+  /// 게임 결과 구하기 메서드
+  bool isWonGame() {
+    if (isPlayingGame) return false;
+    if (monsters.isNotEmpty && player.health <= 0) return false;
+
+    return true;
   }
 
   /// 전투 진행 메서드
@@ -48,11 +62,14 @@ class Game {
     nowMonster ??= selectRandomMonster();
     actionPlayerBattle();
 
-    try {
-      checkSettingNowMonster();
-    } on StateError catch (e) {
-      stdout.writeln(e.message);
-      end();
+    if (nowMonster == null) {
+      String lastContent = '전투 몬스터가 설정되지 않았습니다.';
+      if (monsters.isEmpty) {
+        lastContent = '축하합니다! 모든 몬스터를 물리쳤습니다.';
+        isPlayingGame = false;
+      }
+      stdout.writeln(lastContent);
+      return;
     }
 
     actionMonsterBattle();
@@ -76,17 +93,6 @@ class Game {
   void actionMonsterBattle() {
     printBattleTurn(nowMonster!);
     actionBattle(BattleAction.attack, nowMonster!, player);
-  }
-
-  /// 몬스터 설정 체크 메서드
-  void checkSettingNowMonster() {
-    if (nowMonster != null) return;
-
-    if (monsters.isEmpty) {
-      stdout.writeln('축하합니다! 모든 몬스터를 물리쳤습니다.');
-    } else {
-      throw StateError('현재 전투 중인 몬스터가 설정되지 않았습니다.');
-    }
   }
 
   /// 전투별 행동 메서드
@@ -118,7 +124,10 @@ class Game {
       stdout.writeln('${opponent.name}을(를) 물리쳤습니다!\n');
       deadMonstersCount++;
       monsters.remove(opponent);
-      nowMonster = selectNextBattleMonster();
+      nowMonster = null;
+      if (monsters.isNotEmpty) {
+        nowMonster = selectNextBattleMonster();
+      }
     }
   }
 
@@ -130,6 +139,7 @@ class Game {
       return selectRandomMonster();
     }
 
+    isPlayingGame = false;
     return null;
   }
 
@@ -166,9 +176,9 @@ class Game {
   /// 게임 종료 메서드
   void end() {
     if (player.health <= 0) {
-      stdout.writeln('사용자의 체력이 소진되었습니다.');
-    } 
+      stdout.writeln('사용자의 체력이 소진되었습니다.\n');
+    }
 
-    stdout.writeln("게임이 종료되었습니다. 총 $deadMonstersCount마리의 몬스터를 처치했습니다.");
+    stdout.writeln("게임이 종료되었습니다. 총 $deadMonstersCount마리의 몬스터를 처치했습니다.\n");
   }
 }
