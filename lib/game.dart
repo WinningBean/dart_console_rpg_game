@@ -80,7 +80,7 @@ class Game {
     printBattleTurn(nowMonster!);
     actionBattle(BattleAction.attack, nowMonster!, player);
 
-    // 
+    // 3턴 마다 방어력 증가
     if (++monsterTurnCount == 3) {
       nowMonster!.updateDefense(2);
       monsterTurnCount = 0;
