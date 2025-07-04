@@ -1,6 +1,7 @@
 enum BattleAction {
+  attack(actionNum: 1, description: '공격'),
   defend(actionNum: 2, description: '방어'),
-  attack(actionNum: 1, description: '공격');
+  item(actionNum: 3, description: '아이템 사용');
 
   const BattleAction({required this.actionNum, required this.description});
 

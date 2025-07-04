@@ -11,7 +11,10 @@ class Game {
   final Player player;
   final List<Monster> monsters;
   Monster? nowMonster;
+
   int deadMonstersCount = 0;
+  bool isUsedItem = false;
+  bool isItemAttack = false;
   bool isPlayingGame = true;
 
   /// 생성자
@@ -85,12 +88,41 @@ class Game {
   ) {
     switch (battleAction) {
       case BattleAction.attack:
-        owner.attack(opponent);
-        processAfterAttack(owner, opponent);
+        attack(owner, opponent);
         break;
       case BattleAction.defend:
         owner.defend();
         break;
+      case BattleAction.item:
+        useItem();
+        break;
+    }
+  }
+
+  /// 아이템 사용 메서드
+  void useItem() {
+    if (isUsedItem) {
+      stdout.writeln('아이템을 이미 사용했습니다. 다른 행동을 선택하세요.');
+      actionPlayerBattle();
+      return;
+    }
+
+    stdout.writeln('아이템을 사용하여 다음 공격 시 공격력이 두배로 변경됩니다.');
+    isItemAttack = true;
+  }
+
+  /// 공격 메서드
+  void attack(Character owner, Character opponent) {
+    bool isBonusAttack = owner.runtimeType == Player && isItemAttack;
+    if (isBonusAttack) owner.attackPower *= 2;
+
+    owner.attack(opponent);
+    processAfterAttack(owner, opponent);
+
+    if (isBonusAttack) {
+      owner.attackPower ~/= 2;
+      isItemAttack = false;
+      isUsedItem = true;
     }
   }
 
