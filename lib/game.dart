@@ -28,33 +28,6 @@ class Game {
     }
 
     end();
-    saveGameResult();
-    exit(0);
-  }
-
-  /// 결과 파일 저장 메서드
-  void saveGameResult() {
-    stdout.write('결과를 저장하시겠습니까? (y 입력 시 저장): ');
-    String input = stdin.readLineSync() ?? '';
-    if (input.toLowerCase() == 'y') {
-      final String saveFileName = 'files/result.txt';
-
-      File reusltFile = File(saveFileName);
-      String resultContent =
-          '사용자 이름: ${player.name}, 남은 체력: ${player.health}, 게임 결과: ${isWonGame() ? '승리' : '패배'}';
-      reusltFile.writeAsStringSync(resultContent);
-
-      stdout.writeln('결과가 $saveFileName 으로 저장되었습니다.');
-    }
-    stdout.writeln('프로그램을 종료합니다.');
-  }
-
-  /// 게임 결과 구하기 메서드
-  bool isWonGame() {
-    if (isPlayingGame) return false;
-    if (monsters.isNotEmpty && player.health <= 0) return false;
-
-    return true;
   }
 
   /// 전투 진행 메서드

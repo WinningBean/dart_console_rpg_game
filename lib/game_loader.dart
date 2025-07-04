@@ -4,6 +4,7 @@ import 'dart:math';
 import 'package:dart_console_rpg_game/monster.dart';
 import 'package:dart_console_rpg_game/player.dart';
 
+/// 
 class GameLoader {
   static final playerNameRegExp = RegExp(r'^[a-zA-Z가-힣\s]{1,10}$');
 
