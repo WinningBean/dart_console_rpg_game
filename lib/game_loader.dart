@@ -11,7 +11,7 @@ class GameLoader {
   /// 사용자 생성 메서드
   /// 이름은 입력받아서 설정
   /// files/player.txt로 부터 체력, 공격력, 방어력 불러옴
-  static Player loadValidPlayer(String loadFilePath) {
+  static Player loadPlayer(String loadFilePath) {
     try {
       String name = getCreatePlayerName();
 

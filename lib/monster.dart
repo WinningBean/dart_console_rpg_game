@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:dart_console_rpg_game/character.dart';
 
 /// Character 클래스를 상속받아 몬스터의 특성을 정의하는 클래스

@@ -80,6 +80,7 @@ class Game {
     printBattleTurn(nowMonster!);
     actionBattle(BattleAction.attack, nowMonster!, player);
 
+    // 
     if (++monsterTurnCount == 3) {
       nowMonster!.updateDefense(2);
       monsterTurnCount = 0;
